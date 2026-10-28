@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>《吳國亨模擬器：傳奇人生的覺醒》 | Wu Guoheng Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+</head>
+<body class="theme-dark">
+  <div id="stars-container"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="logo-avatar-wrap">
+        <img id="nav-avatar" src="assets/wu_guoheng.jpg" alt="吳國亨" class="nav-avatar">
+        <span class="live-status-dot"></span>
+      </div>
+      <div class="brand-text">
+        <h1 class="brand-title">吳國亨模擬器</h1>
+        <span class="brand-subtitle">Wu Guoheng Simulator v2.0 • 傳奇人生的覺醒</span>
+      </div>
+    </div>
+
+    <!-- Quick Stats in Nav -->
+    <div class="header-status-bar" id="header-stats">
+      <div class="h-stat" title="資產"><span class="h-stat-icon">💰</span> <span id="nav-stat-money">$10,000</span></div>
+      <div class="h-stat" title="精力"><span class="h-stat-icon">⚡</span> <span id="nav-stat-energy">100/100</span></div>
+      <div class="h-stat" title="當前天數"><span class="h-stat-icon">📅</span> <span id="nav-stat-day">第 1 天</span></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="header-actions">
+      <button id="btn-sound-toggle" class="btn-icon" title="音效開關">🔊</button>
+      <button id="btn-bgm-toggle" class="btn-icon" title="背景音樂">🎵</button>
+      <button id="btn-restart-game" class="btn-sm btn-outline-danger" title="重啟人生">🔄 重開</button>
+    </div>
+  </header>
+
+  <!-- Main Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab-btn active" data-tab="tab-life">
+      <span class="tab-icon">💼</span> 人生模擬 (RPG)
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-arcade">
+      <span class="tab-icon">🎮</span> 躲加班跑酷 (街機)
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-meme">
+      <span class="tab-icon">🕶️</span> 梗圖工坊 & 語錄
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-achievements">
+      <span class="tab-icon">🏆</span> 榮譽成就殿堂 (<span id="achieve-count">0</span>/20)
+    </button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- ============================================ -->
+    <!-- TAB 1: LIFE SIMULATOR (RPG MODE)             -->
+    <!-- ============================================ -->
+    <section id="tab-life" class="tab-panel active">
+      <div class="rpg-dashboard">
+        
+        <!-- Left: Character Card & Live Expressions -->
+        <aside class="char-profile-card">
+          <div class="avatar-stage">
+            <div class="avatar-glow-ring" id="avatar-ring"></div>
+            <div class="avatar-wrapper" id="char-avatar-container">
+              <img id="char-avatar" src="assets/wu_guoheng.jpg" alt="吳國亨本尊" class="char-photo">
+              <!-- Overlay Accessories if unlocked -->
+              <div id="char-glasses" class="avatar-overlay-item glasses-thug"></div>
+              <div id="char-crown" class="avatar-overlay-item head-crown"></div>
+              <div id="char-laser" class="avatar-overlay-item laser-eyes"></div>
+            </div>
+            <div class="status-mood-badge" id="char-mood-badge">😎 精神抖擻</div>
+          </div>
+
+          <!-- Dynamic Speech Bubble -->
+          <div class="speech-bubble" id="char-speech-bubble">
+            <p id="char-dialogue">「只要我下班夠快，加班的陰影就追不上我！」</p>
+          </div>
+
+          <div class="profile-info">
+            <h2 class="char-name">吳國亨 <span class="char-alias" id="char-title">【職場新星】</span></h2>
+            <div class="char-quote-small" id="char-motto">人生座右銘：遇事不決，先喝奶茶</div>
+          </div>
+
+          <!-- Four Core Attributes Progress Bars -->
+          <div class="attribute-list">
+            <div class="attr-row">
+              <div class="attr-label">
+                <span>💰 總資產</span>
+                <span class="attr-val" id="val-money">NT$ 10,000</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill money-bar" id="bar-money" style="width: 20%;"></div>
+              </div>
+            </div>
+
+            <div class="attr-row">
+              <div class="attr-label">
+                <span>⚡ 體力精力</span>
+                <span class="attr-val" id="val-energy">100 / 100</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill energy-bar" id="bar-energy" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="attr-row">
+              <div class="attr-label">
+                <span>🧠 智謀格局</span>
+                <span class="attr-val" id="val-iq">50 (敏銳)</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill iq-bar" id="bar-iq" style="width: 50%;"></div>
+              </div>
+            </div>
+
+            <div class="attr-row">
+              <div class="attr-label">
+                <span>😎 摸魚魅力</span>
+                <span class="attr-val" id="val-charisma">50 (大師潛力)</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill charisma-bar" id="bar-charisma" style="width: 50%;"></div>
+              </div>
+            </div>
+
+            <div class="attr-row">
+              <div class="attr-label">
+                <span>🌟 亨界聲望</span>
+                <span class="attr-val" id="val-fame">10 (初出茅廬)</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill fame-bar" id="bar-fame" style="width: 10%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action: Slap / Interact -->
+          <div class="char-interact-actions">
+            <button id="btn-poke-guoheng" class="btn-secondary btn-block">👉 戳一下亨哥</button>
+            <button id="btn-compliment-guoheng" class="btn-secondary btn-block">✨ 誇讚亨哥很帥</button>
+          </div>
+        </aside>
+
+        <!-- Right: Actions, Log & Event Area -->
+        <div class="rpg-main-area">
+          
+          <!-- Round Info Header -->
+          <div class="round-card">
+            <div class="round-status">
+              <div class="round-date">
+                <span class="tag-day" id="display-day-pill">第 1 天</span>
+                <span class="tag-time" id="display-time-pill">上午 09:00</span>
+              </div>
+              <div class="round-hint" id="display-stage-hint">
+                💡 提示：合理分配體力，30天後將依據總資產與各項屬性解鎖終極結局！
+              </div>
+            </div>
+            <button id="btn-next-day" class="btn-primary btn-advance-day">
+              ⏩ 結束今天進入下一天
+            </button>
+          </div>
+
+          <!-- Action Categories -->
+          <div class="actions-container">
+            <div class="category-header">
+              <span class="cat-pill">今日行動清單 (消耗體力執行)</span>
+            </div>
+
+            <div class="action-grid">
+              <!-- Career / Work -->
+              <div class="action-card work-card" data-action="work_pro">
+                <div class="act-icon">💼</div>
+                <div class="act-body">
+                  <div class="act-title">極限衝刺提案</div>
+                  <div class="act-desc">認真趕工，向老闆證明亨哥實力</div>
+                  <div class="act-cost">⚡ -25 精力 | 💰 +$4,500 | 🧠 +3 智謀</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('work_pro')">執行</button>
+              </div>
+
+              <!-- Slacking -->
+              <div class="action-card slack-card" data-action="work_slack">
+                <div class="act-icon">☕</div>
+                <div class="act-body">
+                  <div class="act-title">頂級帶薪拉屎</div>
+                  <div class="act-desc">在廁所隔間享受孤獨與自由，回復精神</div>
+                  <div class="act-cost">⚡ +20 精力 | 😎 +4 摸魚力 | 💰 帶薪</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('work_slack')">摸魚</button>
+              </div>
+
+              <!-- Pretent Work -->
+              <div class="action-card pretend-card" data-action="work_pretend">
+                <div class="act-icon">⌨️</div>
+                <div class="act-body">
+                  <div class="act-title">鍵盤瘋狂盲打假裝忙</div>
+                  <div class="act-desc">屏幕切換成複雜代碼，其實在看八卦</div>
+                  <div class="act-cost">⚡ -5 精力 | 😎 +3 摸魚力 | 🌟 +2 聲望</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('work_pretend')">操作</button>
+              </div>
+
+              <!-- Invest / Gamble -->
+              <div class="action-card invest-card" data-action="invest_crypto">
+                <div class="act-icon">📈</div>
+                <div class="act-body">
+                  <div class="act-title">梭哈投資「亨幣 (HengCoin)」</div>
+                  <div class="act-desc">高風險區塊鏈，一念天堂一念天台</div>
+                  <div class="act-cost">⚡ -10 精力 | 💰 波動 ±$15,000 | 🧠 +2</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('invest_crypto')">梭哈</button>
+              </div>
+
+              <!-- Scratch Lottery -->
+              <div class="action-card lotto-card" data-action="buy_lottery">
+                <div class="act-icon">🎰</div>
+                <div class="act-body">
+                  <div class="act-title">街角彩券行刮刮樂</div>
+                  <div class="act-desc">試試今日手氣，有機會刮出神秘百倍大獎</div>
+                  <div class="act-cost">💰 -$500 本金 | 隨機大獎爆擊！</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('buy_lottery')">刮一張</button>
+              </div>
+
+              <!-- Fitness / Gym -->
+              <div class="action-card health-card" data-action="gym_workout">
+                <div class="act-icon">🏋️</div>
+                <div class="act-body">
+                  <div class="act-title">極限硬拉與深蹲</div>
+                  <div class="act-desc">鍛鍊亨式霸氣體魄，提升健康活力</div>
+                  <div class="act-cost">⚡ -15 精力 | 魅力 +5 | 體力上限提升</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('gym_workout')">擼鐵</button>
+              </div>
+
+              <!-- Food Feast -->
+              <div class="action-card feast-card" data-action="eat_hotpot">
+                <div class="act-icon">🍲</div>
+                <div class="act-body">
+                  <div class="act-title">豪華麻辣和牛火鍋</div>
+                  <div class="act-desc">大吃一頓犒勞自己，精力瞬間大滿血</div>
+                  <div class="act-cost">💰 -$1,200 | ⚡ +45 精力 | 滿意度MAX</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('eat_hotpot')">大吃</button>
+              </div>
+
+              <!-- Social Party -->
+              <div class="action-card social-card" data-action="social_party">
+                <div class="act-icon">🥂</div>
+                <div class="act-body">
+                  <div class="act-title">亨哥請客熱炒局</div>
+                  <div class="act-desc">叫上同事好兄弟，把酒言歡結交天下奇人</div>
+                  <div class="act-cost">💰 -$2,500 | 😎 +8 魅力 | 🌟 +6 聲望</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('social_party')">組局</button>
+              </div>
+
+              <!-- Deep Reading -->
+              <div class="action-card read-card" data-action="study_philosophy">
+                <div class="act-icon">📚</div>
+                <div class="act-body">
+                  <div class="act-title">深夜研讀量子力學與哲學</div>
+                  <div class="act-desc">思考宇宙與人生的本質，智商突破天際</div>
+                  <div class="act-cost">⚡ -15 精力 | 🧠 +8 智謀 | 悟道機會</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('study_philosophy')">悟道</button>
+              </div>
+
+              <!-- Sleep Early -->
+              <div class="action-card sleep-card" data-action="rest_deep">
+                <div class="act-icon">💤</div>
+                <div class="act-body">
+                  <div class="act-title">戴上眼罩深度補眠</div>
+                  <div class="act-desc">什麼都不管了，睡個昏天暗地</div>
+                  <div class="act-cost">⚡ 精力直接回滿至 100% | 狀態刷新</div>
+                </div>
+                <button class="btn-action-do" onclick="GameRPG.performAction('rest_deep')">就寢</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: Live Event Log & Terminal -->
+          <div class="story-log-card">
+            <div class="story-log-header">
+              <span>📜 亨哥人生大事記 (即時日誌)</span>
+              <button class="btn-text-sm" onclick="GameRPG.clearLog()">清空紀錄</button>
+            </div>
+            <div class="story-log-body" id="rpg-log-box">
+              <div class="log-entry log-highlight">
+                <span class="log-time">[第 1 天]</span> 吳國亨帶著滿腔抱負與傳奇氣場，正式開啟了這段跌宕起伏的人生征程！
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- TAB 2: ARCADE MINI-GAME (DODGE & CATCH)      -->
+    <!-- ============================================ -->
+    <section id="tab-arcade" class="tab-panel">
+      <div class="arcade-layout">
+        <!-- Arcade Sidebar & Rules -->
+        <aside class="arcade-sidebar">
+          <div class="card-glow">
+            <h3>🎮 亨哥跑酷：躲避加班！</h3>
+            <p class="arcade-rule-text">
+              操縱亨哥左右移動，接住<b>發財金、特濃咖啡、錦鯉</b>，躲避<b>加班單、惡性Bug、老闆眼線</b>！
+            </p>
+            <div class="arcade-controls-guide">
+              <div class="ctrl-item">⌨️ <b>鍵盤</b>：A / D 或 左右方向鍵 ← →</div>
+              <div class="ctrl-item">🖱️ <b>滑鼠</b>：在遊戲畫面中左右滑動</div>
+              <div class="ctrl-item">📱 <b>觸控</b>：手指左右拖曳</div>
+            </div>
+
+            <!-- Arcade Scores -->
+            <div class="arcade-stats-box">
+              <div class="arcade-stat-row">
+                <span>當前得分</span>
+                <span class="stat-highlight" id="arcade-current-score">0</span>
+              </div>
+              <div class="arcade-stat-row">
+                <span>最高歷史得分</span>
+                <span class="stat-gold" id="arcade-high-score">0</span>
+              </div>
+              <div class="arcade-stat-row">
+                <span>連擊 Combo</span>
+                <span class="stat-combo" id="arcade-combo">x0</span>
+              </div>
+              <div class="arcade-stat-row">
+                <span>累積轉化財富</span>
+                <span class="stat-money" id="arcade-earned-money">+$0</span>
+              </div>
+            </div>
+
+            <div class="arcade-buttons">
+              <button id="btn-start-arcade" class="btn-primary btn-block btn-lg">▶️ 開始冒險</button>
+              <button id="btn-transfer-arcade" class="btn-success btn-block" disabled title="將街機得分轉化為人生模擬器資金">
+                💳 將街機金幣存入人生帳戶
+              </button>
+            </div>
+          </div>
+
+          <!-- Items Legend -->
+          <div class="arcade-legend card-glow">
+            <h4>📦 掉落物指南</h4>
+            <div class="legend-grid">
+              <div class="legend-item"><span class="leg-icon">💰</span> 金幣 (+100分)</div>
+              <div class="legend-item"><span class="leg-icon">☕</span> 咖啡 (+回血/加速)</div>
+              <div class="legend-item"><span class="leg-icon">🧧</span> 紅包 (+500分)</div>
+              <div class="legend-item"><span class="leg-icon">🌟</span> 錦鯉 (黃金無敵狂潮)</div>
+              <div class="legend-item danger"><span class="leg-icon">📋</span> 加班單 (-25血)</div>
+              <div class="legend-item danger"><span class="leg-icon">🐛</span> 巨型Bug (-35血/暈眩)</div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Arcade Canvas Viewport -->
+        <div class="arcade-canvas-wrapper">
+          <div class="canvas-top-hud" id="arcade-hud">
+            <div class="hud-hp-bar">
+              <span>精力值：</span>
+              <div class="hud-hp-track">
+                <div class="hud-hp-fill" id="arcade-hp-fill" style="width: 100%;"></div>
+              </div>
+              <span id="arcade-hp-text">100 / 100</span>
+            </div>
+            <div class="hud-fever-badge" id="arcade-fever-badge" style="display: none;">
+              🔥 亨哥暴富無敵狂潮！
+            </div>
+          </div>
+
+          <canvas id="arcade-canvas" width="600" height="700"></canvas>
+
+          <!-- Start / Game Over Overlay -->
+          <div id="arcade-overlay" class="canvas-overlay">
+            <div class="overlay-modal">
+              <div class="modal-avatar-bounce">
+                <img src="assets/wu_guoheng.jpg" alt="吳國亨">
+              </div>
+              <h2 id="overlay-title">亨哥大冒險・準備好了嗎？</h2>
+              <p id="overlay-desc">考驗亨哥反應力與摸魚求生技藝的時刻到了！</p>
+              <button id="overlay-btn-action" class="btn-primary btn-lg">🚀 立即啟動！</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- TAB 3: MEME STUDIO & SOUNDBOARD              -->
+    <!-- ============================================ -->
+    <section id="tab-meme" class="tab-panel">
+      <div class="meme-studio-layout">
+        
+        <!-- Left: Canvas Customizer -->
+        <div class="meme-editor-card">
+          <div class="editor-header">
+            <h3>🎨 亨哥專屬表情包製造機</h3>
+            <p>替吳國亨戴上墨鏡、皇冠、金鏈、雷射眼，並自訂霸氣文字，一鍵下載發到群組！</p>
+          </div>
+
+          <div class="meme-canvas-container">
+            <canvas id="meme-canvas" width="600" height="600"></canvas>
+          </div>
+
+          <!-- Meme Controls -->
+          <div class="meme-controls-panel">
+            <div class="control-row">
+              <label>📝 上方文字：</label>
+              <input type="text" id="meme-top-text" class="input-text" placeholder="例：聽哥一句勸" value="聽哥一句勸">
+            </div>
+            <div class="control-row">
+              <label>📝 下方文字：</label>
+              <input type="text" id="meme-bottom-text" class="input-text" placeholder="例：下班了別找我" value="下班了別找我！">
+            </div>
+
+            <!-- Stickers / Accs toggles -->
+            <div class="sticker-select-group">
+              <span class="sticker-group-title">🎭 配件開關：</span>
+              <button class="btn-sticker-toggle" data-acc="sunglasses">🕶️ 墨鏡</button>
+              <button class="btn-sticker-toggle" data-acc="goldChain">⛓️ 大金鏈</button>
+              <button class="btn-sticker-toggle" data-acc="crown">👑 皇冠</button>
+              <button class="btn-sticker-toggle" data-acc="laserEyes">👀 暴走雷射眼</button>
+              <button class="btn-sticker-toggle" data-acc="cigar">🚬 雪茄</button>
+              <button class="btn-sticker-toggle" data-acc="moneyRain">💸 金幣光環</button>
+            </div>
+
+            <div class="meme-actions">
+              <button id="btn-random-meme-quote" class="btn-secondary">🎲 隨機爆笑台詞</button>
+              <button id="btn-export-meme" class="btn-primary">💾 下載高清表情包 (PNG)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Soundboard & Quotes -->
+        <div class="soundboard-card">
+          <div class="sb-header">
+            <h3>📢 亨哥經典語錄與音效打擊板</h3>
+            <p>點擊按鈕，現場演奏亨哥專屬擬音與人生真理！</p>
+          </div>
+
+          <!-- Random Quote Box -->
+          <div class="quote-display-box">
+            <div class="quote-badge">⭐ 亨哥今日金句</div>
+            <blockquote id="daily-quote-text">
+              「不要問公司能為你做什麼，要問你在公司摸了多少魚。」
+            </blockquote>
+            <button id="btn-refresh-quote" class="btn-sm btn-outline-primary">🔄 換一句</button>
+          </div>
+
+          <!-- Soundboard Buttons -->
+          <div class="sound-grid">
+            <button class="sound-btn" onclick="SoundEngine.playCoin(); SoundEngine.showEffect('💰 恭喜發財！')">
+              <span class="s-icon">💰</span>
+              <span class="s-name">發財到手</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playVictory(); SoundEngine.showEffect('🎺 登基成王！')">
+              <span class="s-icon">🎺</span>
+              <span class="s-name">登頂勝歌</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playLaser(); SoundEngine.showEffect('⚡ 眼神殺！')">
+              <span class="s-icon">⚡</span>
+              <span class="s-name">霸氣雷射</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playBoing(); SoundEngine.showEffect('🦘 彈走加班！')">
+              <span class="s-icon">🦘</span>
+              <span class="s-name">彈跳閃避</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playSlap(); SoundEngine.showEffect('👋 啪！打臉')">
+              <span class="s-icon">👋</span>
+              <span class="s-name">清脆打臉</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playBassDrop(); SoundEngine.showEffect('💣 霸氣降臨！')">
+              <span class="s-icon">💣</span>
+              <span class="s-name">震撼低音</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playBuzzer(); SoundEngine.showEffect('🚨 警報！老闆來了')">
+              <span class="s-icon">🚨</span>
+              <span class="s-name">查崗警報</span>
+            </button>
+            <button class="sound-btn" onclick="SoundEngine.playLevelUp(); SoundEngine.showEffect('✨ 升級大宗師！')">
+              <span class="s-icon">✨</span>
+              <span class="s-name">大成突破</span>
+            </button>
+          </div>
+
+          <!-- Floating toast container for sound effects -->
+          <div id="sound-toast" class="sound-toast"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- TAB 4: ACHIEVEMENTS & ENDINGS GALLERY        -->
+    <!-- ============================================ -->
+    <section id="tab-achievements" class="tab-panel">
+      <div class="achieve-layout">
+        <div class="achieve-header-card">
+          <h2>🏆 吳國亨傳奇里程碑與結局圖鑑</h2>
+          <p>完成模擬器各項挑戰與奇遇，點亮專屬徽章與特殊稱號！</p>
+          <div class="achieve-progress-summary">
+            <span>解鎖進度：</span>
+            <div class="progress-bar-bg" style="width: 240px; display: inline-block; vertical-align: middle;">
+              <div class="progress-bar-fill gold-bar" id="achieve-bar" style="width: 0%;"></div>
+            </div>
+            <span id="achieve-text" class="stat-highlight">0 / 20</span>
+          </div>
+        </div>
+
+        <div class="achieve-cards-grid" id="achievements-container">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Endings Gallery -->
+        <div class="endings-section">
+          <h3 class="section-title">📜 傳奇多重結局圖鑑 (12 大結局)</h3>
+          <div class="endings-grid" id="endings-container">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================ -->
+  <!-- MODAL: RANDOM EVENT DIALOG                   -->
+  <!-- ============================================ -->
+  <div id="event-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-tag" id="event-type-tag">⚡ 突發命運奇遇</span>
+        <h3 id="event-title">命運的十字路口</h3>
+      </div>
+      <div class="modal-body">
+        <div class="event-image-wrap">
+          <img src="assets/wu_guoheng.jpg" id="event-avatar" alt="吳國亨">
+        </div>
+        <p id="event-description">事件描述文字...</p>
+      </div>
+      <div class="modal-choices" id="event-choices-box">
+        <!-- Buttons added dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODAL: GAME OVER / ENDING CARD               -->
+  <!-- ============================================ -->
+  <div id="ending-modal" class="modal-backdrop">
+    <div class="modal-card modal-ending-card">
+      <div class="ending-ribbon" id="ending-rank">🏆 SSS級傳奇評價</div>
+      <div class="ending-avatar-wrap">
+        <img src="assets/wu_guoheng.jpg" alt="吳國亨">
+      </div>
+      <h2 id="ending-title">《世界首富・亨哥帝國創辦人》</h2>
+      <div class="ending-subtitle" id="ending-subtitle">30天的風雨兼程，你走出了屬於自己的神話</div>
+      <div class="ending-stats-summary" id="ending-stats-box">
+        <!-- Render summary -->
+      </div>
+      <div class="ending-review" id="ending-comment">
+        「世上本沒有路，走的人多了，便有了亨哥的大道。」
+      </div>
+      <div class="ending-actions">
+        <button id="btn-restart-from-ending" class="btn-primary btn-lg">🔄 帶著傳奇天賦重生重開</button>
+        <button id="btn-share-ending" class="btn-secondary btn-lg">📸 前往表情包工坊留念</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Scripts in order -->
+  <script src="assets/avatarData.js"></script>
+  <script src="sound.js"></script>
+  <script src="data.js"></script>
+  <script src="game_rpg.js"></script>
+  <script src="game_arcade.js"></script>
+  <script src="meme_studio.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
